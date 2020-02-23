@@ -176,5 +176,8 @@ class FreeimageConan(ConanFile):
         self.copy("lib/*.lib", dst="lib", keep_path=False)
 
     def package_info(self):
-        self.cpp_info.libs = ["freeimage"]
+        if self.settings.compiler == "Visual Studio":
+            self.cpp_info.libs = ["freeimage"]
+        else:
+            self.cpp_info.libs = ["libfreeimage.so"]
 
