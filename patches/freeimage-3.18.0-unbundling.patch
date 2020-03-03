@@ -463,7 +463,7 @@ index e9bd5bf..680e634 100644
  // ==========================================================
  
 -#include "../LibRawLite/libraw/libraw.h"
-+#include <libraw.h>
++#include <libraw/libraw.h>
  
  #include "FreeImage.h"
  #include "Utilities.h"

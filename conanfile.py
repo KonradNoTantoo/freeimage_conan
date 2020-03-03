@@ -16,9 +16,6 @@ class FreeimageConan(ConanFile):
     description = "FreeImage is an Open Source library project for developers who would like to support popular graphics image formats like PNG, BMP, JPEG, TIFF and others as needed by today's multimedia applications."
     topics = ("conan", "image decoding", "graphics")
     settings = "os", "compiler", "build_type", "arch"
-    # TODO add options for each dependency
-    # options = {"shared": [True, False]}
-    # default_options = "shared=False"
     generators = "cmake"
     exports = ["CMakeLists.txt", os.path.join("patches", "*")]
 
@@ -28,20 +25,13 @@ class FreeimageConan(ConanFile):
         tools.save(path_to_source, file_content)
 
     def requirements(self):
-        # ZLib (1.2.11)
         self.requires("zlib/1.2.11@conan/stable")
-        # LibJPEG (9c)
         self.requires("libjpeg/9c@bincrafters/stable")
         self.requires("openjpeg/2.3.0@bincrafters/stable")
-        # LibPNG (1.6.35)
         self.requires("libpng/1.6.36@bincrafters/stable")
-        # LibTIFF (4.0.9)
         self.requires("libtiff/4.0.9@bincrafters/stable")
-        # LibWebP (1.0.0)
         self.requires("libwebp/1.0.0@bincrafters/stable")
-        # OpenEXR (2.2.1)
         self.requires("openexr/2.3.0@conan/stable")
-        # LibRaw (0.19.0)
         self.requires("libraw/0.19.5@utopia/testing")
 
     def source(self):
@@ -176,8 +166,5 @@ class FreeimageConan(ConanFile):
         self.copy("lib/*.lib", dst="lib", keep_path=False)
 
     def package_info(self):
-        if self.settings.compiler == "Visual Studio":
-            self.cpp_info.libs = ["freeimage"]
-        else:
-            self.cpp_info.libs = ["libfreeimage.so"]
+        self.cpp_info.libs = ["freeimage"]
 
