@@ -6,6 +6,15 @@ conan_basic_setup()
 
 find_package ( ZLIB REQUIRED )
 
+set(WITH_EXR ON CACHE BOOL "") 
+set(WITH_JPEG ON CACHE BOOL "") 
+set(WITH_JPEG2K ON CACHE BOOL "") 
+set(WITH_MNG ON CACHE BOOL "") 
+set(WITH_PNG ON CACHE BOOL "") 
+set(WITH_TIFF ON CACHE BOOL "") 
+set(WITH_RAW ON CACHE BOOL "") 
+set(WITH_WEBP ON CACHE BOOL "") 
+
 set(freeimage_SOURCES
     "Source/FreeImage/BitmapAccess.cpp"
     "Source/FreeImage/ColorLookup.cpp"
@@ -37,39 +46,29 @@ set(freeimage_SOURCES
     "Source/FreeImage/tmoFattal02.cpp"
     "Source/FreeImage/tmoReinhard05.cpp"
     "Source/FreeImage/ToneMapping.cpp"
-    "Source/FreeImage/J2KHelper.cpp"
-    "Source/FreeImage/MNGHelper.cpp"
     "Source/FreeImage/Plugin.cpp"
     "Source/FreeImage/PluginBMP.cpp"
     "Source/FreeImage/PluginCUT.cpp"
     "Source/FreeImage/PluginDDS.cpp"
-    "Source/FreeImage/PluginEXR.cpp"
     "Source/FreeImage/PluginG3.cpp"
     "Source/FreeImage/PluginGIF.cpp"
     "Source/FreeImage/PluginHDR.cpp"
     "Source/FreeImage/PluginICO.cpp"
     "Source/FreeImage/PluginIFF.cpp"
-    "Source/FreeImage/PluginJ2K.cpp"
     "Source/FreeImage/PluginJNG.cpp"
     "Source/FreeImage/PluginJP2.cpp"
-    "Source/FreeImage/PluginJPEG.cpp"
     # "Source/FreeImage/PluginJXR.cpp"
     "Source/FreeImage/PluginKOALA.cpp"
-    "Source/FreeImage/PluginMNG.cpp"
     "Source/FreeImage/PluginPCD.cpp"
     "Source/FreeImage/PluginPCX.cpp"
     "Source/FreeImage/PluginPFM.cpp"
     "Source/FreeImage/PluginPICT.cpp"
-    "Source/FreeImage/PluginPNG.cpp"
     "Source/FreeImage/PluginPNM.cpp"
     "Source/FreeImage/PluginPSD.cpp"
     "Source/FreeImage/PluginRAS.cpp"
-    "Source/FreeImage/PluginRAW.cpp"
     "Source/FreeImage/PluginSGI.cpp"
     "Source/FreeImage/PluginTARGA.cpp"
-    "Source/FreeImage/PluginTIFF.cpp"
     "Source/FreeImage/PluginWBMP.cpp"
-    "Source/FreeImage/PluginWebP.cpp"
     "Source/FreeImage/PluginXBM.cpp"
     "Source/FreeImage/PluginXPM.cpp"
     "Source/FreeImage/PSDParser.cpp"
@@ -100,6 +99,47 @@ set(freeimage_SOURCES
 )
 
 
+if(WITH_EXR)
+    add_compile_definitions("USE_EXR")
+    list(APPEND freeimage_SOURCES "Source/FreeImage/PluginEXR.cpp")
+endif(WITH_EXR)
+
+if(WITH_JPEG)
+    add_compile_definitions("USE_JPEG")
+    list(APPEND freeimage_SOURCES "Source/FreeImage/PluginJPEG.cpp")
+endif(WITH_JPEG)
+
+if(WITH_JPEG2K)
+    add_compile_definitions("USE_JPEG2K")
+    list(APPEND freeimage_SOURCES "Source/FreeImage/PluginJ2K.cpp" "Source/FreeImage/J2KHelper.cpp")
+endif(WITH_JPEG2K)
+
+if(WITH_MNG)
+    add_compile_definitions("USE_MNG")
+    list(APPEND freeimage_SOURCES "Source/FreeImage/PluginMNG.cpp" "Source/FreeImage/MNGHelper.cpp")
+endif(WITH_MNG)
+
+if(WITH_PNG)
+    add_compile_definitions("USE_PNG")
+    list(APPEND freeimage_SOURCES "Source/FreeImage/PluginPNG.cpp")
+endif(WITH_PNG)
+
+if(WITH_TIFF)
+    add_compile_definitions("USE_TIFF")
+    list(APPEND freeimage_SOURCES "Source/FreeImage/PluginTIFF.cpp")
+endif(WITH_TIFF)
+
+if(WITH_RAW)
+    add_compile_definitions("USE_RAW")
+    list(APPEND freeimage_SOURCES "Source/FreeImage/PluginRAW.cpp")
+endif(WITH_RAW)
+
+if(WITH_WEBP)
+    add_compile_definitions("USE_WEBP")
+    list(APPEND freeimage_SOURCES "Source/FreeImage/PluginWebP.cpp")
+endif(WITH_WEBP)
+
+
 if(MSVC)
     set(freeimage_SOURCES
         ${freeimage_SOURCES}
@@ -107,13 +147,12 @@ if(MSVC)
         )
 endif(MSVC)
 
+
 include_directories("Source") 
 add_library(freeimage SHARED ${freeimage_SOURCES})
 
-if(MSVC)
-    target_link_libraries(freeimage ${CONAN_LIBS})
-    target_compile_definitions(freeimage PUBLIC FREEIMAGE_EXPORTS _CRT_SECURE_NO_WARNINGS)
-else(MSVC)
-    target_link_libraries(freeimage ${CONAN_LIBS_LIBJPEG} ${CONAN_LIBS_OPENJPEG})
-endif(MSVC)
+target_link_libraries(freeimage ${CONAN_LIBS})
 
+if(MSVC)
+    target_compile_definitions(freeimage PUBLIC FREEIMAGE_EXPORTS _CRT_SECURE_NO_WARNINGS)
+endif(MSVC)

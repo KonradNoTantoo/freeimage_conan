@@ -16,6 +16,29 @@ class FreeimageConan(ConanFile):
     description = "FreeImage is an Open Source library project for developers who would like to support popular graphics image formats like PNG, BMP, JPEG, TIFF and others as needed by today's multimedia applications."
     topics = ("conan", "image decoding", "graphics")
     settings = "os", "compiler", "build_type", "arch"
+
+    options = {
+        "with_exr": [True,False],
+        "with_jpeg": [True,False],
+        "with_jpeg2k": [True,False],
+        "with_mng": [True,False],
+        "with_png": [True,False],
+        "with_tiff": [True,False],
+        "with_raw": [True,False],
+        "with_webp": [True,False],
+    }
+
+    default_options = {
+        "with_exr": True,
+        "with_jpeg": True,
+        "with_jpeg2k": True,
+        "with_mng": True,
+        "with_png": True,
+        "with_tiff": True,
+        "with_raw": True,
+        "with_webp": True,
+    }
+
     generators = "cmake"
     exports = ["CMakeLists.txt", os.path.join("patches", "*")]
 
@@ -26,13 +49,21 @@ class FreeimageConan(ConanFile):
 
     def requirements(self):
         self.requires("zlib/1.2.11@conan/stable")
-        self.requires("libjpeg/9c@bincrafters/stable")
-        self.requires("openjpeg/2.3.0@bincrafters/stable")
-        self.requires("libpng/1.6.36@bincrafters/stable")
-        self.requires("libtiff/4.0.9@bincrafters/stable")
-        self.requires("libwebp/1.0.0@bincrafters/stable")
-        self.requires("openexr/2.3.0@conan/stable")
-        self.requires("libraw/0.19.5@utopia/testing")
+
+        if self.options.with_jpeg:
+            self.requires("libjpeg/9c@bincrafters/stable")
+        if self.options.with_jpeg2k:
+            self.requires("openjpeg/2.3.0@bincrafters/stable")
+        if self.options.with_png:
+            self.requires("libpng/1.6.36@bincrafters/stable")
+        if self.options.with_tiff:
+            self.requires("libtiff/4.0.9@bincrafters/stable")
+        if self.options.with_webp:
+            self.requires("libwebp/1.0.0@bincrafters/stable")
+        if self.options.with_exr:
+            self.requires("openexr/2.3.0@conan/stable")
+        if self.options.with_raw:
+            self.requires("libraw/0.19.5@utopia/testing")
 
     def source(self):
         tarball_path = "http://downloads.sourceforge.net/freeimage/FreeImage{}.zip".format(self.compact_version)
@@ -142,6 +173,16 @@ class FreeimageConan(ConanFile):
     def build(self):
         # install custom CMakeLists in source and use CMake
         cmake = CMake(self)
+
+        cmake.definitions["WITH_EXR"] = "ON" if self.options.with_exr else "OFF"
+        cmake.definitions["WITH_JPEG"] = "ON" if self.options.with_jpeg else "OFF"
+        cmake.definitions["WITH_JPEG2K"] = "ON" if self.options.with_jpeg2k else "OFF"
+        cmake.definitions["WITH_MNG"] = "ON" if self.options.with_mng else "OFF"
+        cmake.definitions["WITH_PNG"] = "ON" if self.options.with_png else "OFF"
+        cmake.definitions["WITH_TIFF"] = "ON" if self.options.with_tiff else "OFF"
+        cmake.definitions["WITH_RAW"] = "ON" if self.options.with_raw else "OFF"
+        cmake.definitions["WITH_WEBP"] = "ON" if self.options.with_webp else "OFF"
+
         cmake.configure(source_folder=self.folder_name)
         cmake.build()
 
